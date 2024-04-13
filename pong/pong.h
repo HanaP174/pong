@@ -15,7 +15,7 @@ Q_OBJECT
 public:
     explicit Pong(QWidget *parent = nullptr);
 
-    // create game images
+    // todo
     // setFocus()
     // gameLoop()
 
@@ -24,18 +24,23 @@ protected:
 
 private:
 
-    static const int PLAYGROUND_WIDTH = 1000;
-    static const int PLAYGROUND_HEIGHT = 600;
-    static const qreal PADDLE_WIDTH = 30;
-    static const qreal PADDLE_HEIGHT = 100;
+    constexpr static const qreal PLAYGROUND_WIDTH = 1000;
+    constexpr static const qreal PLAYGROUND_HEIGHT = 600;
+    constexpr static const qreal PADDLE_WIDTH = 30;
+    constexpr static const qreal PADDLE_HEIGHT = 100;
+    constexpr static const qreal BALL_RADIUS = 15;
 
-    Paddle playerPaddle;
-    Paddle computerPaddle;
+    QRectF playerPaddle;
+    QRectF computerPaddle;
+    QRectF ball;
+
+    int playerScore = 0;
+    int computerScore = 0;
 
     void paintPaddles(QPainter &painter);
     void paintBall(QPainter &painter);
-    void paintNet(QPainter &painter);
-    void paintScore(QPainter &painter);
+    static void paintNet(QPainter &painter);
+    void paintScore(QPainter &painter) const;
     void paintObjects(QPainter &painter);
 };
 
