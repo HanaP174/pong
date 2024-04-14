@@ -15,20 +15,25 @@ Q_OBJECT
 public:
     explicit Pong(QWidget *parent = nullptr);
 
-    // todo
-    // setFocus()
-    // gameLoop()
-
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void timerEvent(QTimerEvent *timerEvent) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
+
+    struct BallSpeed {
+        qreal x = 2;
+        qreal y = 2;
+    };
 
     constexpr static const qreal PLAYGROUND_WIDTH = 1000;
     constexpr static const qreal PLAYGROUND_HEIGHT = 600;
     constexpr static const qreal PADDLE_WIDTH = 30;
     constexpr static const qreal PADDLE_HEIGHT = 100;
     constexpr static const qreal BALL_RADIUS = 15;
+    static const int DELAY = 10;
+    constexpr static const qreal MAX_BALL_SPEED = 2;
 
     QRectF playerPaddle;
     QRectF computerPaddle;
@@ -37,11 +42,20 @@ private:
     int playerScore = 0;
     int computerScore = 0;
 
+    BallSpeed ballSpeed = BallSpeed();
+
+    bool gameOver = false;
+    bool paused = false;
+
+    void initObjects();
     void paintPaddles(QPainter &painter);
     void paintBall(QPainter &painter);
     static void paintNet(QPainter &painter);
     void paintScore(QPainter &painter) const;
     void paintObjects(QPainter &painter);
+    void moveBall();
+    void bounceBallFromPaddle(qreal center, qreal height);
+    void bounceBallFromEdge();
 };
 
 

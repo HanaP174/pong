@@ -7,9 +7,18 @@
 #include "pong.h"
 #include "ui_Pong.h"
 #include <QPainter>
+#include <QMouseEvent>
 
 Pong::Pong(QWidget *parent) : QWidget(parent) {
+    initObjects();
+    setFocus();
+    startTimer(DELAY);
+}
 
+void Pong::initObjects() {
+    playerPaddle = QRectF(PLAYGROUND_WIDTH - PADDLE_WIDTH, PLAYGROUND_HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
+    computerPaddle = QRect(0, PLAYGROUND_HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
+    ball = QRect(PLAYGROUND_WIDTH - PADDLE_WIDTH - 15 - BALL_RADIUS, PLAYGROUND_HEIGHT / 2 - PADDLE_HEIGHT / 2 - BALL_RADIUS, BALL_RADIUS * 2, BALL_RADIUS * 2);
 }
 
 void Pong::paintEvent(QPaintEvent *event) {
@@ -21,9 +30,7 @@ void Pong::paintEvent(QPaintEvent *event) {
 }
 
 void Pong::paintPaddles(QPainter &painter) {
-    playerPaddle = QRectF(PLAYGROUND_WIDTH - PADDLE_WIDTH, PLAYGROUND_HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
     painter.fillRect(playerPaddle, Qt::white);
-    computerPaddle = QRect(0, PLAYGROUND_HEIGHT / 2 - PADDLE_HEIGHT / 2, PADDLE_WIDTH, PADDLE_HEIGHT);
     painter.fillRect(computerPaddle, Qt::white);
 }
 
@@ -34,13 +41,12 @@ void Pong::paintNet(QPainter &painter) {
 }
 
 void Pong::paintBall(QPainter &painter) {
-    ball = QRect(PLAYGROUND_WIDTH - PADDLE_WIDTH - 15 - BALL_RADIUS, PLAYGROUND_HEIGHT / 2 - PADDLE_HEIGHT / 2 - BALL_RADIUS, BALL_RADIUS * 2, BALL_RADIUS * 2);
     painter.setBrush(Qt::white);
     painter.drawEllipse(ball);
 }
 
 void Pong::paintScore(QPainter &painter) const {
-    painter.setPen(Qt::white);
+    painter.setPen(Qt::red);
     QFont font = painter.font();
     font.setPointSize(30);
     painter.setFont(font);
@@ -53,4 +59,56 @@ void Pong::paintObjects(QPainter &painter) {
     paintPaddles(painter);
     paintBall(painter);
     paintScore(painter);
+}
+
+void Pong::timerEvent(QTimerEvent *timerEvent) {
+    if (!gameOver) {
+        moveBall();
+        repaint();
+    }
+}
+
+void Pong::moveBall() {
+    ball.translate(ballSpeed.x, ballSpeed.y);
+
+    if (ball.top() <= 0 || ball.bottom() >= PLAYGROUND_HEIGHT) {
+        bounceBallFromEdge();
+    } else if (ball.intersects(computerPaddle)) {
+        bounceBallFromPaddle(computerPaddle.center().y(), computerPaddle.height());
+        computerScore++;
+        return;
+    } else if (ball.intersects(playerPaddle)) {
+        bounceBallFromPaddle(playerPaddle.center().y(), playerPaddle.height());
+        playerScore++;
+        return;
+    } else if (ball.left() <= 0 || ball.right() >= PLAYGROUND_WIDTH) {
+        gameOver = true;
+    }
+}
+
+void Pong::bounceBallFromPaddle(qreal center, qreal height) {
+    qreal relativePosition = (ball.center().y() - center) / (height / 2.0);
+    ballSpeed.y = relativePosition * MAX_BALL_SPEED;
+    ballSpeed.x *= -1;
+}
+
+void Pong::bounceBallFromEdge() {
+    if (ball.x() < 0 || ball.x() > PLAYGROUND_WIDTH) {
+        ballSpeed.x *= -1;
+    } else if (ball.y() < 0 || ball.y() > PLAYGROUND_HEIGHT) {
+        ballSpeed.y *= -1;
+    }
+}
+
+void Pong::mouseMoveEvent(QMouseEvent *event) {
+    qreal newY = event->position().y() - playerPaddle.height() / 2;
+
+    if (newY < 0) {
+        newY = 0;
+    } else if (newY > PLAYGROUND_HEIGHT - playerPaddle.height()) {
+        newY = PLAYGROUND_HEIGHT - playerPaddle.height();
+    }
+    playerPaddle.moveTo(playerPaddle.x(), newY);
+
+    update();
 }
