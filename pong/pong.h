@@ -67,6 +67,7 @@ private:
     void bounceBallFromEdge();
     void moveComputerPaddle();
     void setPaddleMouseDirection(qreal currentMouseY);
+    void endGame(QPainter &painter);
 };
 
 

@@ -24,7 +24,11 @@ void Pong::initObjects() {
 void Pong::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
 
-    paintObjects(painter);
+    if (gameOver) {
+        endGame(painter);
+    } else {
+        paintObjects(painter);
+    }
 
     QWidget::paintEvent(event);
 }
@@ -157,4 +161,16 @@ void Pong::setPaddleMouseDirection(qreal currentMouseY) {
         }
     }
     previousMouseY = currentMouseY;
+}
+
+void Pong::endGame(QPainter &painter) {
+    QFont font("Arial", 20, QFont::Bold);
+    painter.setFont(font);
+    painter.drawText(rect(), Qt::AlignCenter, "Game Over");
+
+    QString playerScoreText = "Player's score: " + QString::number(playerScore);
+    painter.drawText(rect().adjusted(0, 50, 0, 0), Qt::AlignCenter, playerScoreText);
+
+    QString computerScoreText = "Computer's score: " + QString::number(computerScore);
+    painter.drawText(rect().adjusted(0, 100, 0, 0), Qt::AlignCenter, computerScoreText);
 }
