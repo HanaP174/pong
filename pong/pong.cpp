@@ -64,6 +64,7 @@ void Pong::paintObjects(QPainter &painter) {
 void Pong::timerEvent(QTimerEvent *timerEvent) {
     if (!gameOver) {
         moveBall();
+        moveComputerPaddle();
         repaint();
     }
 }
@@ -111,4 +112,27 @@ void Pong::mouseMoveEvent(QMouseEvent *event) {
     playerPaddle.moveTo(playerPaddle.x(), newY);
 
     update();
+}
+
+void Pong::moveComputerPaddle() {
+    qreal ballCenterX = ball.x() + ball.width() / 2;
+
+    if (ballCenterX <= PLAYGROUND_WIDTH / 2) {
+        qreal computerPaddleCenterY = computerPaddle.y() + computerPaddle.height() / 2;
+        qreal ballCenterY = ball.y() + ball.height() / 2;
+        if (ballCenterY < computerPaddleCenterY) {
+            qreal newY = computerPaddle.y() - COMPUTER_PADDLE_SPEED;
+            if (newY < 0) {
+                newY = 0;
+            }
+            computerPaddle.moveTo(computerPaddle.x(), newY);
+        } else if (ballCenterY > computerPaddleCenterY) {
+            qreal newY = computerPaddle.y() + COMPUTER_PADDLE_SPEED;
+            if (newY + computerPaddle.height() > PLAYGROUND_HEIGHT) {
+                newY = PLAYGROUND_HEIGHT - computerPaddle.height();
+            }
+            computerPaddle.moveTo(computerPaddle.x(), newY);
+        }
+    }
+
 }
