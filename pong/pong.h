@@ -27,6 +27,12 @@ private:
         qreal y = 2;
     };
 
+    enum PaddleBounceDirection {
+        TOP,
+        DOWN,
+        NONE
+    };
+
     constexpr static const qreal PLAYGROUND_WIDTH = 1000;
     constexpr static const qreal PLAYGROUND_HEIGHT = 600;
     constexpr static const qreal PADDLE_WIDTH = 30;
@@ -44,6 +50,8 @@ private:
     int computerScore = 0;
 
     BallSpeed ballSpeed = BallSpeed();
+    PaddleBounceDirection paddleBounceDirection = NONE;
+    qreal previousMouseY;
 
     bool gameOver = false;
     bool paused = false;
@@ -55,9 +63,10 @@ private:
     void paintScore(QPainter &painter) const;
     void paintObjects(QPainter &painter);
     void moveBall();
-    void bounceBallFromPaddle(qreal center, qreal height);
+    void bounceBallFromPaddle(qreal center, qreal height, bool isPlayer);
     void bounceBallFromEdge();
     void moveComputerPaddle();
+    void setPaddleMouseDirection(qreal currentMouseY);
 };
 
 

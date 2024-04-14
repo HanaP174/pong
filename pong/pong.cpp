@@ -75,11 +75,11 @@ void Pong::moveBall() {
     if (ball.top() <= 0 || ball.bottom() >= PLAYGROUND_HEIGHT) {
         bounceBallFromEdge();
     } else if (ball.intersects(computerPaddle)) {
-        bounceBallFromPaddle(computerPaddle.center().y(), computerPaddle.height());
+        bounceBallFromPaddle(computerPaddle.center().y(), computerPaddle.height(), false);
         computerScore++;
         return;
     } else if (ball.intersects(playerPaddle)) {
-        bounceBallFromPaddle(playerPaddle.center().y(), playerPaddle.height());
+        bounceBallFromPaddle(playerPaddle.center().y(), playerPaddle.height(), true);
         playerScore++;
         return;
     } else if (ball.left() <= 0 || ball.right() >= PLAYGROUND_WIDTH) {
@@ -87,9 +87,18 @@ void Pong::moveBall() {
     }
 }
 
-void Pong::bounceBallFromPaddle(qreal center, qreal height) {
-    qreal relativePosition = (ball.center().y() - center) / (height / 2.0);
-    ballSpeed.y = relativePosition * MAX_BALL_SPEED;
+void Pong::bounceBallFromPaddle(qreal center, qreal height, bool isPlayer) {
+    qreal relativePosition = (ball.center().y() - center) / (height / 2.0) * MAX_BALL_SPEED;
+
+    if (isPlayer) {
+        if (paddleBounceDirection == TOP) {
+            relativePosition = -MAX_BALL_SPEED;
+        } else if (paddleBounceDirection == DOWN) {
+            relativePosition = MAX_BALL_SPEED;
+        }
+        paddleBounceDirection = NONE;
+    }
+    ballSpeed.y = relativePosition;
     ballSpeed.x *= -1;
 }
 
@@ -102,7 +111,10 @@ void Pong::bounceBallFromEdge() {
 }
 
 void Pong::mouseMoveEvent(QMouseEvent *event) {
-    qreal newY = event->position().y() - playerPaddle.height() / 2;
+    qreal currentMouseY = event->pos().y();
+    setPaddleMouseDirection(currentMouseY);
+
+    qreal newY = currentMouseY - playerPaddle.height() / 2;
 
     if (newY < 0) {
         newY = 0;
@@ -134,5 +146,15 @@ void Pong::moveComputerPaddle() {
             computerPaddle.moveTo(computerPaddle.x(), newY);
         }
     }
+}
 
+void Pong::setPaddleMouseDirection(qreal currentMouseY) {
+    if (previousMouseY != -1 && currentMouseY != previousMouseY) {
+        if (currentMouseY < previousMouseY) {
+            paddleBounceDirection = TOP;
+        } else {
+            paddleBounceDirection = DOWN;
+        }
+    }
+    previousMouseY = currentMouseY;
 }
