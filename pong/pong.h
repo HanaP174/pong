@@ -39,8 +39,8 @@ private:
     constexpr static const qreal PADDLE_HEIGHT = 100;
     constexpr static const qreal BALL_RADIUS = 15;
     static const int DELAY = 5;
-    constexpr static const qreal MAX_BALL_SPEED = 2;
-    constexpr static const qreal COMPUTER_PADDLE_SPEED = 2;
+    constexpr static const qreal MAX_BALL_SPEED = 3;
+    constexpr static const qreal COMPUTER_PADDLE_SPEED = 3;
 
     QRectF playerPaddle;
     QRectF computerPaddle;
