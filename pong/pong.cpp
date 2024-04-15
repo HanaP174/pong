@@ -10,6 +10,11 @@
 #include <QMouseEvent>
 
 Pong::Pong(QWidget *parent) : QWidget(parent) {
+    pauseButton = new QPushButton("Pause", this);
+    pauseButton->setGeometry(10, 10, 100, 30);
+
+    connect(pauseButton, &QPushButton::clicked, this, &Pong::pauseGame);
+
     initObjects();
     setFocus();
     startTimer(DELAY);
@@ -66,7 +71,7 @@ void Pong::paintObjects(QPainter &painter) {
 }
 
 void Pong::timerEvent(QTimerEvent *timerEvent) {
-    if (!gameOver) {
+    if (!gameOver && !paused) {
         moveBall();
         moveComputerPaddle();
         repaint();
@@ -175,4 +180,8 @@ void Pong::endGame(QPainter &painter) {
 
     QString computerScoreText = "Computer's score: " + QString::number(computerScore);
     painter.drawText(rect().adjusted(0, 100, 0, 0), Qt::AlignCenter, computerScoreText);
+}
+
+void Pong::pauseGame() {
+    paused = !paused;
 }

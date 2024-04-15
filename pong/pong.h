@@ -7,7 +7,7 @@
 
 #include <QWidget>
 #include "paddle/Paddle.h"
-
+#include <QPushButton>
 
 class Pong : public QWidget {
 Q_OBJECT
@@ -19,6 +19,9 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void timerEvent(QTimerEvent *timerEvent) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+
+private slots:
+    void pauseGame();
 
 private:
 
@@ -45,6 +48,8 @@ private:
     QRectF playerPaddle;
     QRectF computerPaddle;
     QRectF ball;
+
+    QPushButton *pauseButton;
 
     int playerScore = 0;
     int computerScore = 0;
