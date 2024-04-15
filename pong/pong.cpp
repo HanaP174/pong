@@ -83,15 +83,17 @@ void Pong::moveBall() {
 
     if (ball.top() <= 0 || ball.bottom() >= PLAYGROUND_HEIGHT) {
         bounceBallFromEdge();
-    } else if (ball.intersects(computerPaddle) && ball.left() <= computerPaddle.right()
-    && ball.right() >= computerPaddle.right()) {
-        bounceBallFromPaddle(computerPaddle.center().y(), computerPaddle.height(), false);
+    } else if (hasComputerScored()) {
         computerScore++;
+        bounceBallFromPaddle(computerPaddle.center().y(), computerPaddle.height(), false);
+        computerScored = true;
+        playerScored = false;
         return;
-    } else if (ball.intersects(playerPaddle) && ball.right() >= playerPaddle.left()
-    && ball.left() <= playerPaddle.left()) {
-        bounceBallFromPaddle(playerPaddle.center().y(), playerPaddle.height(), true);
+    } else if (hasPlayerScored()) {
         playerScore++;
+        bounceBallFromPaddle(playerPaddle.center().y(), playerPaddle.height(), true);
+        playerScored = true;
+        computerScored = false;
         return;
     } else if (ball.left() <= 0 || ball.right() >= PLAYGROUND_WIDTH) {
         gameOver = true;
@@ -184,4 +186,22 @@ void Pong::endGame(QPainter &painter) {
 
 void Pong::pauseGame() {
     paused = !paused;
+}
+
+bool Pong::hasPlayerScored() {
+    return ball.intersects(playerPaddle)
+        && ball.right() >= playerPaddle.left()
+        && ball.left() <= playerPaddle.left()
+        && ball.top() <= playerPaddle.bottom()
+        && ball.bottom() >= playerPaddle.top()
+        && !playerScored;
+}
+
+bool Pong::hasComputerScored() {
+    return ball.intersects(computerPaddle)
+        && ball.left() <= computerPaddle.right()
+        && ball.right() >= computerPaddle.right()
+        && ball.top() <= computerPaddle.bottom()
+        && ball.bottom() >= computerPaddle.top()
+        && !computerScored;
 }

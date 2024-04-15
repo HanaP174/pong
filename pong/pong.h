@@ -53,6 +53,8 @@ private:
 
     int playerScore = 0;
     int computerScore = 0;
+    bool playerScored = false;
+    bool computerScored = false;
 
     BallSpeed ballSpeed = BallSpeed();
     PaddleBounceDirection paddleBounceDirection = NONE;
@@ -73,6 +75,8 @@ private:
     void moveComputerPaddle();
     void setPaddleMouseDirection(qreal currentMouseY);
     void endGame(QPainter &painter);
+    bool hasPlayerScored();
+    bool hasComputerScored();
 };
 
 
