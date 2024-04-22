@@ -10,14 +10,34 @@
 #include <QMouseEvent>
 
 Pong::Pong(QWidget *parent) : QWidget(parent) {
+    init();
+}
+
+void Pong::init() {
     pauseButton = new QPushButton("Pause", this);
     pauseButton->setGeometry(10, 10, 100, 30);
-
     connect(pauseButton, &QPushButton::clicked, this, &Pong::pauseGame);
+
+    restartButton = new QPushButton("Restart", this);
+    restartButton->setGeometry((PLAYGROUND_WIDTH/2 - 40), (PLAYGROUND_HEIGHT/2 + 100), 100, 30);
+    connect(restartButton, &QPushButton::clicked, this, &Pong::restartGame);
+    restartButton->hide();
+
+    playerScore = 0;
+    computerScore = 0;
+    playerScored = false;
+    computerScored = false;
+    ballSpeed = BallSpeed();
+    paddleBounceDirection = NONE;
+
+    gameOver = false;
+    paused = false;
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this,  &Pong::onTimer);
 
     initObjects();
     setFocus();
-    startTimer(DELAY);
+    timer->start(DELAY);
 }
 
 void Pong::initObjects() {
@@ -70,7 +90,7 @@ void Pong::paintObjects(QPainter &painter) {
     paintScore(painter);
 }
 
-void Pong::timerEvent(QTimerEvent *timerEvent) {
+void Pong::onTimer() {
     if (!gameOver && !paused) {
         moveBall();
         moveComputerPaddle();
@@ -179,6 +199,8 @@ void Pong::endGame(QPainter &painter) {
         pauseButton = nullptr;
     }
 
+    timer->stop();
+
     QFont font("Arial", 20, QFont::Bold);
     painter.setFont(font);
     painter.drawText(rect(), Qt::AlignCenter, "Game Over");
@@ -188,10 +210,22 @@ void Pong::endGame(QPainter &painter) {
 
     QString computerScoreText = "Computer's score: " + QString::number(computerScore);
     painter.drawText(rect().adjusted(0, 100, 0, 0), Qt::AlignCenter, computerScoreText);
+
+    restartButton->show();
 }
 
 void Pong::pauseGame() {
     paused = !paused;
+}
+
+void Pong::restartGame() {
+    if (restartButton != nullptr) {
+        restartButton->hide();
+        restartButton->deleteLater();
+        restartButton = nullptr;
+    }
+
+    init();
 }
 
 bool Pong::hasPlayerScored() {
