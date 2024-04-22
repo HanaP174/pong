@@ -14,7 +14,7 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(pong main.cpp playground/playground.cpp playground/playground.h playground/playground.ui pong/pong.cpp pong/pong.h pong/pong.ui pong/paddle/Paddle.cpp pong/paddle/Paddle.h)
+add_executable(pong main.cpp playground/playground.cpp playground/playground.h playground/playground.ui pong/pong.cpp pong/pong.h pong/pong.ui)
 target_link_libraries(pong
         Qt::Core
         Qt::Gui

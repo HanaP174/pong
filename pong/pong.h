@@ -6,7 +6,6 @@
 #define PONG_PONG_H
 
 #include <QWidget>
-#include "paddle/Paddle.h"
 #include <QPushButton>
 
 class Pong : public QWidget {

@@ -173,6 +173,12 @@ void Pong::setPaddleMouseDirection(qreal currentMouseY) {
 }
 
 void Pong::endGame(QPainter &painter) {
+    if (pauseButton != nullptr) {
+        pauseButton->hide();
+        pauseButton->deleteLater();
+        pauseButton = nullptr;
+    }
+
     QFont font("Arial", 20, QFont::Bold);
     painter.setFont(font);
     painter.drawText(rect(), Qt::AlignCenter, "Game Over");
